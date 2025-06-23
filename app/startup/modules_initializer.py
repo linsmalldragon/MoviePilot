@@ -140,7 +140,7 @@ def init_modules():
     # 资源包检测
     ResourceHelper()
     # 用户认证
-    user_auth()
+    # user_auth()
     # 加载模块
     ModuleManager()
     # 启动事件消费
