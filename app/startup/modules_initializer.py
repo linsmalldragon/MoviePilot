@@ -7,14 +7,6 @@ from app.log import logger
 from app.utils.system import SystemUtils
 from app.command import CommandChain
 
-# SitesHelper涉及资源包拉取，提前引入并容错提示
-try:
-    from app.helper.sites import SitesHelper
-except ImportError as e:
-    SitesHelper = None
-    error_message = f"错误: {str(e)}\n站点认证及索引相关资源导入失败，请尝试重建容器或手动拉取资源"
-    print(error_message, file=sys.stderr)
-    sys.exit(1)
 
 from app.core.event import EventManager
 from app.helper.thread import ThreadHelper
@@ -80,22 +72,6 @@ def user_auth():
     logger.info(f"用户认证成功")
 
 
-def check_auth():
-    """
-    检查认证状态
-    """
-    if SitesHelper().auth_level < 2:
-        err_msg = "用户认证失败，站点相关功能将无法使用！"
-        MessageHelper().put(f"注意：{err_msg}", title="用户认证", role="system")
-        CommandChain().post_message(
-            Notification(
-                mtype=NotificationType.Manual,
-                title="MoviePilot用户认证",
-                text=err_msg,
-                link=settings.MP_DOMAIN('#/site')
-            )
-        )
-
 
 def stop_modules():
     """
@@ -127,10 +103,8 @@ def init_modules():
     DisplayHelper()
     # DoH
     DohHelper()
-    # 站点管理
-    SitesHelper()
     # 资源包检测
-    ResourceHelper()
+    # ResourceHelper()
     # 用户认证
     # user_auth()
     # 加载模块
@@ -139,5 +113,3 @@ def init_modules():
     EventManager().start()
     # 启动前端服务
     start_frontend()
-    # 检查认证状态
-    check_auth()

@@ -13,7 +13,7 @@ from app.core.event import eventmanager, Event
 from app.core.metainfo import MetaInfo
 from app.db.systemconfig_oper import SystemConfigOper
 from app.helper.progress import ProgressHelper
-from app.helper.sites import SitesHelper
+from SitesIndexer import get_indexers
 from app.helper.torrent import TorrentHelper
 from app.log import logger
 from app.schemas import NotExistMediaInfo
@@ -304,7 +304,7 @@ class SearchChain(ChainBase):
         if not sites:
             sites = SystemConfigOper().get(SystemConfigKey.IndexerSites) or []
 
-        for indexer in SitesHelper().get_indexers():
+        for indexer in get_indexers():
             # 检查站点索引开关
             if not sites or indexer.get("id") in sites:
                 indexer_sites.append(indexer)

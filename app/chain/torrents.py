@@ -10,7 +10,7 @@ from app.core.metainfo import MetaInfo
 from app.db.site_oper import SiteOper
 from app.db.systemconfig_oper import SystemConfigOper
 from app.helper.rss import RssHelper
-from app.helper.sites import SitesHelper
+from SitesIndexer import get_indexer, get_indexers
 from app.helper.torrent import TorrentHelper
 from app.log import logger
 from app.schemas import Notification
@@ -79,7 +79,7 @@ class TorrentsChain(ChainBase):
         :param page: 页码
         """
         logger.info(f'开始获取站点 {domain} 最新种子 ...')
-        site = SitesHelper().get_indexer(domain)
+        site = get_indexer(domain)
         if not site:
             logger.error(f'站点 {domain} 不存在！')
             return []
@@ -91,7 +91,7 @@ class TorrentsChain(ChainBase):
         :param domain: 站点域名
         """
         logger.info(f'开始获取站点 {domain} RSS ...')
-        site = SitesHelper().get_indexer(domain)
+        site = get_indexer(domain)
         if not site:
             logger.error(f'站点 {domain} 不存在！')
             return []
@@ -153,7 +153,7 @@ class TorrentsChain(ChainBase):
                                        if not TorrentHelper().is_invalid(_torrent.torrent_info.enclosure)]
 
         # 所有站点索引
-        indexers = SitesHelper().get_indexers()
+        indexers = get_indexers()
         # 需要刷新的站点domain
         domains = []
 

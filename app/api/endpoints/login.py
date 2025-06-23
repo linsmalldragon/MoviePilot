@@ -8,7 +8,6 @@ from app import schemas
 from app.chain.user import UserChain
 from app.core import security
 from app.core.config import settings
-from app.helper.sites import SitesHelper
 from app.helper.wallpaper import WallpaperHelper
 
 router = APIRouter()
@@ -29,7 +28,7 @@ def login_access_token(
     if not success:
         raise HTTPException(status_code=401, detail=user_or_message)
 
-    level = SitesHelper().auth_level
+    level = 2
     return schemas.Token(
         access_token=security.create_access_token(
             userid=user_or_message.id,

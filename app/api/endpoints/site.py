@@ -21,7 +21,7 @@ from app.db.models.siteuserdata import SiteUserData
 from app.db.site_oper import SiteOper
 from app.db.systemconfig_oper import SystemConfigOper
 from app.db.user_oper import get_current_active_superuser
-from app.helper.sites import SitesHelper
+from SitesIndexer import get_indexer
 from app.scheduler import Scheduler
 from app.schemas.types import SystemConfigKey, EventType
 from app.utils.string import StringUtils
@@ -50,10 +50,8 @@ def add_site(
     """
     if not site_in.url:
         return schemas.Response(success=False, message="站点地址不能为空")
-    if SitesHelper().auth_level < 2:
-        return schemas.Response(success=False, message="用户未通过认证，无法使用站点功能！")
     domain = StringUtils.get_url_domain(site_in.url)
-    site_info = SitesHelper().get_indexer(domain)
+    site_info = get_indexer(domain)
     if not site_info:
         return schemas.Response(success=False, message="该站点不支持，请检查站点域名是否正确")
     if Site.get_by_domain(db, domain):
@@ -183,7 +181,7 @@ def refresh_userdata(
             status_code=404,
             detail=f"站点 {site_id} 不存在",
         )
-    indexer = SitesHelper().get_indexer(site.domain)
+    indexer = get_indexer(site.domain)
     if not indexer:
         return schemas.Response(success=False, message="站点不支持索引或未通过用户认证！")
     user_data = SiteChain().refresh_userdata(site=indexer) or {}
@@ -275,7 +273,7 @@ def site_category(site_id: int,
             status_code=404,
             detail=f"站点 {site_id} 不存在",
         )
-    indexer = SitesHelper().get_indexer(site.domain)
+    indexer = get_indexer(site.domain)
     if not indexer:
         raise HTTPException(
             status_code=404,
@@ -368,13 +366,6 @@ def read_rss_sites(db: Session = Depends(get_db),
     return rss_sites
 
 
-@router.get("/auth", summary="查询认证站点", response_model=dict)
-def read_auth_sites(_: schemas.TokenPayload = Depends(verify_token)) -> dict:
-    """
-    获取可认证站点列表
-    """
-    return SitesHelper().get_authsites()
-
 
 @router.post("/auth", summary="用户站点认证", response_model=schemas.Response)
 def auth_site(
@@ -386,14 +377,13 @@ def auth_site(
     """
     if not auth_info or not auth_info.site or not auth_info.params:
         return schemas.Response(success=False, message="请输入认证站点和认证参数")
-    status, msg = SitesHelper().check_user(auth_info.site, auth_info.params)
     SystemConfigOper().set(SystemConfigKey.UserSiteAuthParams, auth_info.dict())
     # 认证成功后，重新初始化插件
     PluginManager().init_config()
     Scheduler().init_plugin_jobs()
     Command().init_commands()
     register_plugin_api()
-    return schemas.Response(success=status, message=msg)
+    return schemas.Response(success=True, message="认证成功")
 
 
 @router.get("/mapping", summary="获取站点域名到名称的映射", response_model=schemas.Response)

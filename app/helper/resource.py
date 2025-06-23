@@ -55,18 +55,18 @@ class ResourceHelper:
                         if platform and platform != SystemUtils.platform():
                             continue
                         # 判断版本号
-                        if rtype == "auth":
-                            # 站点认证资源
-                            local_version = SitesHelper().auth_version
-                        elif rtype == "sites":
-                            # 站点索引资源
-                            local_version = SitesHelper().indexer_version
-                        else:
-                            continue
-                        if StringUtils.compare_version(version, ">", local_version):
-                            logger.info(f"{rname} 资源包有更新，最新版本：v{version}")
-                        else:
-                            continue
+                        # if rtype == "auth":
+                        #     # 站点认证资源
+                        #     local_version = SitesHelper().auth_version
+                        # elif rtype == "sites":
+                        #     # 站点索引资源
+                        #     local_version = SitesHelper().indexer_version
+                        # else:
+                        #     continue
+                        # if StringUtils.compare_version(version, ">", local_version):
+                        #     logger.info(f"{rname} 资源包有更新，最新版本：v{version}")
+                        # else:
+                        continue
                         # 需要安装
                         need_updates[rname] = target
                     if need_updates:

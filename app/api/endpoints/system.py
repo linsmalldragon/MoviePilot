@@ -29,7 +29,6 @@ from app.helper.mediaserver import MediaServerHelper
 from app.helper.message import MessageHelper
 from app.helper.progress import ProgressHelper
 from app.helper.rule import RuleHelper
-from app.helper.sites import SitesHelper
 from app.helper.subscribe import SubscribeHelper
 from app.helper.system import SystemHelper
 from app.log import logger
@@ -204,8 +203,6 @@ def get_env_setting(_: User = Depends(get_current_active_superuser)):
     )
     info.update({
         "VERSION": APP_VERSION,
-        "AUTH_VERSION": SitesHelper().auth_version,
-        "INDEXER_VERSION": SitesHelper().indexer_version,
         "FRONTEND_VERSION": SystemChain().get_frontend_version()
     })
     return schemas.Response(success=True,

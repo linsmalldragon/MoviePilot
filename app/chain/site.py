@@ -17,7 +17,7 @@ from app.helper.cloudflare import under_challenge
 from app.helper.cookie import CookieHelper
 from app.helper.cookiecloud import CookieCloudHelper
 from app.helper.rss import RssHelper
-from app.helper.sites import SitesHelper
+from SitesIndexer import get_indexer, get_indexers
 from app.log import logger
 from app.schemas import MessageChannel, Notification, SiteUserData
 from app.schemas.types import EventType, NotificationType
@@ -92,7 +92,7 @@ class SiteChain(ChainBase):
         """
         刷新所有站点的用户数据
         """
-        sites = SitesHelper().get_indexers()
+        sites = get_indexers()
         any_site_updated = False
         result = {}
         for site in sites:
@@ -305,12 +305,11 @@ class SiteChain(ChainBase):
         _update_count = 0
         _add_count = 0
         _fail_count = 0
-        siteshelper = SitesHelper()
         siteoper = SiteOper()
         rsshelper = RssHelper()
         for domain, cookie in cookies.items():
             # 索引器信息
-            indexer = siteshelper.get_indexer(domain)
+            indexer = get_indexer(domain)
             # 数据库的站点信息
             site_info = siteoper.get_by_domain(domain)
             if site_info and site_info.is_active == 1:
@@ -438,7 +437,6 @@ class SiteChain(ChainBase):
             domain = StringUtils.get_url_domain(domain)
         # 站点信息
         siteoper = SiteOper()
-        siteshelper = SitesHelper()
         siteinfo = siteoper.get_by_domain(domain)
         if not siteinfo:
             logger.warn(f"未维护站点 {domain} 信息！")
@@ -446,7 +444,7 @@ class SiteChain(ChainBase):
         # Cookie
         cookie = siteinfo.cookie
         # 索引器
-        indexer = siteshelper.get_indexer(domain)
+        indexer = get_indexer(domain)
         if not indexer:
             logger.warn(f"站点 {domain} 索引器不存在！")
             return
@@ -502,7 +500,7 @@ class SiteChain(ChainBase):
             return
         if str(domain).startswith("http"):
             domain = StringUtils.get_url_domain(domain)
-        indexer = SitesHelper().get_indexer(domain)
+        indexer = get_indexer(domain)
         if not indexer:
             return
         # 刷新站点用户数据

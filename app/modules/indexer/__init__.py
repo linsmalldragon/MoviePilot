@@ -5,7 +5,7 @@ from app.core.config import settings
 from app.core.context import TorrentInfo
 from app.db.site_oper import SiteOper
 from app.helper.module import ModuleHelper
-from app.helper.sites import SitesHelper, SiteSpider
+from app.helper.sites import SiteSpider
 from app.log import logger
 from app.modules import _ModuleBase
 from app.modules.indexer.parser import SiteParserBase
@@ -66,9 +66,6 @@ class IndexerModule(_ModuleBase):
         """
         测试模块连接性
         """
-        sites = SitesHelper().get_indexers()
-        if not sites:
-            return False, "未配置站点或未通过用户认证"
         return True, ""
 
     def init_setting(self) -> Tuple[str, Union[str, bool]]:
@@ -120,12 +117,6 @@ class IndexerModule(_ModuleBase):
                     and StringUtils.is_chinese(search_word):
                 # 不支持中文
                 logger.warn(f"{site.get('name')} 不支持中文搜索")
-                continue
-
-            # 站点流控
-            state, msg = SitesHelper().check(StringUtils.get_url_domain(site.get("domain")))
-            if state:
-                logger.warn(msg)
                 continue
 
             # 去除搜索关键字中的特殊字符
