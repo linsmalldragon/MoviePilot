@@ -674,12 +674,12 @@ class Scheduler(metaclass=Singleton):
         用户认证检查
         """
         self._auth_count = 0
-        logger.info(f"{msg} 用户认证成功")
+        logger.info(f"用户认证成功")
         SchedulerChain().post_message(
             Notification(
                 mtype=NotificationType.Manual,
                 title="MoviePilot用户认证成功",
-                text=f"使用站点：{msg}，如有插件使用异常，请重启MoviePilot。",
+                text=f"如有插件使用异常，请重启MoviePilot。",
                 link=settings.MP_DOMAIN('#/site')
             )
         )

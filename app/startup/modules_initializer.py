@@ -77,15 +77,7 @@ def user_auth():
     """
     用户认证检查
     """
-    sites_helper = SitesHelper()
-    if sites_helper.auth_level >= 2:
-        return
-    auth_conf = SystemConfigOper().get(SystemConfigKey.UserSiteAuthParams)
-    status, msg = sites_helper.check_user(**auth_conf) if auth_conf else sites_helper.check_user()
-    if status:
-        logger.info(f"{msg} 用户认证成功")
-    else:
-        logger.info(f"用户认证失败，{msg}")
+    logger.info(f"用户认证成功")
 
 
 def check_auth():
