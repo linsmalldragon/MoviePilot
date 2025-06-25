@@ -3673,7 +3673,7 @@
             }
         },
         "mteam": {
-            "id": "mteam",
+            "id": 1,
             "name": "馒头",
             "domain": "https://xp.m-team.io/",
             "ext_domains": [
